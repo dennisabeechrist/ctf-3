@@ -1,84 +1,53 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<title>Echo Chamber Test</title>
-<style>
-  body {
-    font-family: sans-serif;
-    background-color: #1e1e1e;
-    color: #f0f0f0;
-    text-align: center;
-    padding-top: 100px;
-  }
-  input, button {
-    font-size: 16px;
-    padding: 10px;
-    border: none;
-    margin: 10px;
-    border-radius: 5px;
-  }
-  button {
-    background-color: #00aaaa;
-    color: #000;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-  }
-  button:hover {
-    background-color: #008080;
-  }
-  #response {
-    margin-top: 20px;
-    font-size: 1.2em;
-    color: #00ff00;
-  }
-</style>
+  <meta charset="UTF-8" />
+  <title>Echo Chamber</title>
+  <script src="redirect.js" defer></script>
+  <style>
+    body {
+      background-color: #1e1e1e;
+      color: #f5f5f5;
+      font-family: sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+    }
+    .container {
+      border: 2px solid #00ffff;
+      padding: 40px;
+      border-radius: 12px;
+      max-width: 400px;
+      text-align: center;
+    }
+    input, button {
+      font-size: 16px;
+      padding: 10px;
+      margin: 10px 0;
+      width: 80%;
+      border: none;
+      border-radius: 5px;
+    }
+    button {
+      background-color: #00ffff;
+      color: #000;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #00cccc;
+    }
+  </style>
 </head>
 <body>
-  <h1>Echo Chamber</h1>
-  <p>Whatever you say will be echoed back...</p>
-
-  <input id="inputBox" type="text" placeholder="Say something..." />
-  <button id="echoBtn">Echo</button>
-
-  <p id="response"></p>
-
-<script>
-  const targetHash = "2e7d2c03a9507ae265ecf5b5356885a5c3f6e2a8eab5b2394e25e9f2c4091e8e";
-
-  async function isCorrectInput(input) {
-    const encoder = new TextEncoder();
-    const data = encoder.encode(input.toLowerCase());
-    const hashBuffer = await crypto.subtle.digest('SHA-256', data);
-    const hashArray = Array.from(new Uint8Array(hashBuffer));
-    const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-    return hashHex === targetHash;
-  }
-
-  document.getElementById('echoBtn').addEventListener('click', async () => {
-    const input = document.getElementById('inputBox').value.trim();
-    const response = document.getElementById('response');
-
-    if (!input) {
-      response.textContent = "Please type something!";
-      return;
-    }
-
-    response.textContent = `You said: ${input}`;
-
-    try {
-      const correct = await isCorrectInput(input);
-      console.log('Hash check:', correct);
-      if (correct) {
-        window.location.href = "flag.html";
-      } else {
-        console.log('Input hash did not match.');
-      }
-    } catch (e) {
-      console.error('Error during hashing:', e);
-      response.textContent = "Something went wrong. Check console.";
-    }
-  });
-</script>
+  <div class="container">
+    <h1>Echo Chamber</h1>
+    <p>Type something into the void. Maybe it’ll echo back...</p>
+    <input type="text" id="inputBox" placeholder="Your words here" />
+    <button onclick="checkInput()">Echo</button>
+    <p id="result"></p>
+  </div>
 </body>
 </html>
