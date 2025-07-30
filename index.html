@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>Echo Chamber</title>
   <style>
     body {
@@ -16,6 +16,21 @@
       padding: 10px;
       border: none;
       margin: 10px;
+      border-radius: 5px;
+    }
+    button {
+      background-color: #00aaaa;
+      color: #000;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+    button:hover {
+      background-color: #008080;
+    }
+    #response {
+      margin-top: 20px;
+      font-size: 1.2em;
+      color: #00ff00;
     }
   </style>
 </head>
@@ -23,30 +38,36 @@
   <h1>Echo Chamber</h1>
   <p>Whatever you say will be echoed back...</p>
 
-  <input id="inputBox" type="text" placeholder="Say something...">
+  <input id="inputBox" type="text" placeholder="Say something..." />
   <button onclick="reflect()">Echo</button>
 
   <p id="response"></p>
 
   <script>
-    // SHA-256 hash of the keyword "mirror"
+    // SHA-256 hash of "mirror"
     const targetHash = "2e7d2c03a9507ae265ecf5b5356885a5c3f6e2a8eab5b2394e25e9f2c4091e8e";
 
     async function reflect() {
-      const input = document.getElementById('inputBox').value.trim();
+      const input = document.getElementById('inputBox').value.trim().toLowerCase();
       const response = document.getElementById('response');
-      
+
+      if (!input) {
+        response.textContent = "Please type something!";
+        return;
+      }
+
       response.textContent = `You said: ${input}`;
 
+      // Encode and hash input
       const encoder = new TextEncoder();
-      const data = encoder.encode(input.toLowerCase());
+      const data = encoder.encode(input);
       const hashBuffer = await crypto.subtle.digest('SHA-256', data);
       const hashArray = Array.from(new Uint8Array(hashBuffer));
       const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
 
+      // Check hash
       if (hashHex === targetHash) {
-        // Match found, redirect to hidden page
-        window.location.href = 'flag.html';
+        window.location.href = "flag.html";
       }
     }
   </script>
