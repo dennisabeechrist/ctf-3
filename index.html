@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-<title>Echo Chamber</title>
+<title>Echo Chamber Test</title>
 <style>
   body {
     font-family: sans-serif;
@@ -43,23 +43,42 @@
 
   <p id="response"></p>
 
-  <script src="secret.js"></script>
-  <script>
-    document.getElementById('echoBtn').addEventListener('click', async () => {
-      const input = document.getElementById('inputBox').value.trim();
-      const response = document.getElementById('response');
+<script>
+  const targetHash = "2e7d2c03a9507ae265ecf5b5356885a5c3f6e2a8eab5b2394e25e9f2c4091e8e";
 
-      if (!input) {
-        response.textContent = "Please type something!";
-        return;
-      }
+  async function isCorrectInput(input) {
+    const encoder = new TextEncoder();
+    const data = encoder.encode(input.toLowerCase());
+    const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+    return hashHex === targetHash;
+  }
 
-      response.textContent = `You said: ${input}`;
+  document.getElementById('echoBtn').addEventListener('click', async () => {
+    const input = document.getElementById('inputBox').value.trim();
+    const response = document.getElementById('response');
 
-      if (await isCorrectInput(input)) {
+    if (!input) {
+      response.textContent = "Please type something!";
+      return;
+    }
+
+    response.textContent = `You said: ${input}`;
+
+    try {
+      const correct = await isCorrectInput(input);
+      console.log('Hash check:', correct);
+      if (correct) {
         window.location.href = "flag.html";
+      } else {
+        console.log('Input hash did not match.');
       }
-    });
-  </script>
+    } catch (e) {
+      console.error('Error during hashing:', e);
+      response.textContent = "Something went wrong. Check console.";
+    }
+  });
+</script>
 </body>
 </html>
